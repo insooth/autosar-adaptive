@@ -1,0 +1,178 @@
+;
+;
+Document Title; Specification of Persistency
+Document Owner; AUTOSAR
+Document Responsibility; AUTOSAR
+Document Identification No; 858
+Document Status; Final
+Part of AUTOSAR Standard; Adaptive Platform
+Part of Standard Release; 19-03
+;
+;
+SW Req Number; Description
+SWS_PER_00309; Persistent data shall always be local to one Process.
+SWS_PER_00210; The Persistency cluster shall encrypt data before storing it to the persistent memory.
+SWS_PER_00211; The Persistency cluster shall decrypt data after reading it from persistent memory.
+SWS_PER_00317; The Persistency cluster shall store redundant information for every Key-Value Storage and every File Storage represented by a PortPrototype typed by a PersistencyInterface where PersistencyInterface.redundancy is set to redundant.
+SWS_PER_00221; The Persistency cluster shall use the redundant information to detect data corruption in the persistent memory.
+SWS_PER_00222; The Persistency cluster shall use the redundant information to recover corrupted data if possible.
+SWS_PER_00318; In case a PersistencyRedundancyHandling aggregated as PersistencyDeployment.redundancyHandling is derived as PersistencyRedundancyCrc, the Persistency cluster shall calculate a CRC value with the bit width defined by length when persisting the Key-Value Storage or a file in the File Storage, and shall use this CRC to check the Key-Value Storage or the file in the File Storage when it is read back.
+SWS_PER_00319; In case a PersistencyRedundancyHandling aggregated as PersistencyDeployment.redundancyHandling is derived as PersistencyRedundancyMOutOfN, the Persistency cluster shall store N copies when persisting the Key-Value Storage or a file in the File Storage, and shall check that at least M of the N copies of the Key-Value Storage or the file in the File Storage are identical when it is read back. N is defined by n, and M is defined by m.
+SWS_PER_00378; Persistency shall store the Executable.version and the SoftwareCluster.version of the manifest persistently.
+SWS_PER_00379; Elements defined in the deployment data (PersistencyKeyValueDatabase and PersistencyFileArray and associated classes) shall always be preferred over elements defined in the application design (PersistencyKeyValueDatabaseInterface and PersistencyFileProxyInterface and associated classes). The latter shall only be used if the former does not exist.
+SWS_PER_00251; An update strategy defined in the deployment data (PersistencyDeployment.updateStrategy, PersistencyKeyValuePair. updateStrategy, PersistencyFile.updateStrategy) shall always be preferred over the update strategy defined in the application design (PersistencyInterface. updateStrategy, PersistencyDataElement.updateStrategy, PersistencyFileProxy.updateStrategy). The latter shall only be used if the former does not exist.
+SWS_PER_00380; An update strategy defined for a single key (PersistencyKeyValuePair. updateStrategy, PersistencyDataElement.updateStrategy) shall always be preferred over the update strategy defined for the enclosing Key-Value Storage (PersistencyDeployment.updateStrategy, PersistencyInterface. updateStrategy). The latter shall only be used if the former does not exist.
+SWS_PER_00381; An update strategy defined for a single file (PersistencyFile. updateStrategy, PersistencyFileProxy.updateStrategy) shall always be preferred over the update strategy defined for the enclosing File Storage (PersistencyDeployment.updateStrategy, PersistencyInterface. updateStrategy). The latter shall only be used if the former does not exist.
+SWS_PER_00382; When a Key-Value Storage or File Storage is opened by the application using OpenKeyValueStorage or OpenFileStorage, or when UpdatePersistency is called, the Persistency shall check for the existence of stored data. If no persistent data is found, the Persistency shall initialize the persistent data.
+SWS_PER_00383; Persistency shall create a Key-Value Storage for each PortPrototype typed by a PersistencyKeyValueDatabaseInterface that is found in the manifest of a newly installed Adaptive Application. The Key-Value Storage shall be identified at run-time by the shortName path of the PortPrototype, passed as InstanceSpecifier to OpenKeyValueStorage.
+SWS_PER_00252; Persistency shall create an entry in the Key-Value Storage for each PersistencyKeyValueDatabaseInterface. dataElement and PersistencyKeyValueDatabase.keyValuePair that is found in the manifest of a newly installed or updated Adaptive Application, and for which the update strategy is keepExisting or overwrite.
+SWS_PER_00253; Entries in the Key-Value Storage shall use the shortName of the PersistencyDataElement and/or PersistencyKeyValuePair as key.
+SWS_PER_00254; Entries in the Key-Value Storage shall be created with the data type defined by the CppImplementationDataType which types the PersistencyDataElement and/or by the CppImplementationDataType referenced as PersistencyKeyValuePair.valueDataType.
+SWS_PER_00384; Entries in the Key-Value Storage shall be created with the value taken from the PersistencyKeyValuePair.initValue or, if that does not exist, from the PersistencyDataRequiredComSpec.initValue.
+SWS_PER_00385; Persistency shall create a File Storage for each PortPrototype typed by a PersistencyFileProxyInterface that is found in the manifest of a newly installed Adaptive Application. The File Storage shall be identified at run-time by the shortName path of the PortPrototype, passed as InstanceSpecifier to OpenFileStorage.
+SWS_PER_00265; Persistency shall create a file in the File Storage for each PersistencyFileProxyInterface.fileProxy and PersistencyFileArray. file that is found in the manifest of a newly installed or updated Adaptive Application, and for which the update strategy is keepExisting or overwrite.
+SWS_PER_00266; Files in the File Storage shall use the name identified by PersistencyFileProxy.fileName and/or PersistencyFile.fileName.
+SWS_PER_00267; Files in the File Storage shall be created with the content taken from the resource (within the installed SoftwarePackage) that is addressed by PersistencyFile.contentUri or, if that does not exist, by PersistencyFileProxy. contentUri. If that does not exist either, and empty file shall be created.
+SWS_PER_00386; When a Key-Value Storage or File Storage is opened by the application using OpenKeyValueStorage or OpenFileStorage, or when UpdatePersistency is called, the Persistency shall compare the SoftwareCluster. version in the manifest against the stored version. If the version in the manifest is higher than the stored version, the Persistency shall first create a backup of the persistent data and then update the data.
+SWS_PER_00387; When a Key-Value Storage or File Storage is opened by the application using OpenKeyValueStorage or OpenFileStorage, or when UpdatePersistency is called, the Persistency shall compare the Executable. version in the manifest against the stored version. If the version in the manifest is higher than the stored version, the Persistency shall call the function registered by the application using RegisterApplicationDataUpdateCallback for each Key-Value Storage and File Storage that was updated according to [SWS_PER_00386].
+SWS_PER_00388; When a new PortPrototype typed by a PersistencyKeyValueDatabaseInterface is detected in an updated manifest, the Persistency shall create a Key-Value Storage as specified in [SWS_PER_00383].
+[SWS_PER_00389; When a PortPrototype typed by a PersistencyKeyValueDatabaseInterface is missing in an updated manifest, the Persistency shall remove the corresponding Key-Value Storage.
+SWS_PER_00390; When a PersistencyKeyValueDatabaseInterface. dataElement and/or a PersistencyKeyValueDatabase.keyValuePair with a new key is detected in an updated manifest, the Persistency shall create a new entry in the Key-Value Storage as specified in [SWS_PER_00252], [SWS_PER_00253], [SWS_PER_00254], and [SWS_PER_00384].
+SWS_PER_00391; When an existing key of a Key-Value Storage cannot be associated with any PersistencyKeyValueDatabaseInterface. dataElement or PersistencyKeyValueDatabase.keyValuePair in an updated manifest, and the update strategy of the PersistencyKeyValueDatabase or PersistencyKeyValueDatabaseInterface corresponding to the Key-Value Storage is delete, the Persistency shall remove the entry for that key from the Key-Value Storage.
+SWS_PER_00275; When an existing key of a Key-Value Storage can be associated with a PersistencyKeyValueDatabaseInterface.dataElement or PersistencyKeyValueDatabase.keyValuePair in an updated manifest, and the update strategy is overwrite, the Persistency shall replace the entry in the Key-Value Storage with the new type and value as specified in [SWS_PER_00254] and [SWS_PER_00384].
+SWS_PER_00277; When an existing key of a Key-Value Storage can be associated with a PersistencyKeyValueDatabaseInterface.dataElement or PersistencyKeyValueDatabase.keyValuePair in an updated manifest, and the update strategy is delete, the Persistency shall remove the entry for that key from the Key-Value Storage.
+SWS_PER_00392; When a new PortPrototype typed by a PersistencyFileProxyInterface is detected in an updated manifest, the Persistency shall create a File Storage as specified in [SWS_PER_00385].
+SWS_PER_00393; When a PortPrototype typed by a PersistencyFileProxyInterface is missing in an updated manifest, the Persistency shall remove the corresponding File Storage.
+SWS_PER_00394; When a PersistencyFileProxyInterface.fileProxy and/or PersistencyFileArray.file with a new file name is detected in an updated manifest, the Persistency shall create a new file in the File Storage as specified in [SWS_PER_00265], [SWS_PER_00266], and [SWS_PER_00267].
+SWS_PER_00395; When an existing file of a File Storage cannot be associated with any PersistencyFileProxyInterface.fileProxy or PersistencyFileArray.file in an updated manifest, and the update strategy of the PersistencyFileArray or PersistencyFileProxyInterface corresponding to the File Storage is delete, the Persistency shall remove the file from the File Storage.
+SWS_PER_00281; When an existing file of a File Storage can be associated with a PersistencyFileProxyInterface.fileProxy or PersistencyFileArray.file in an updated manifest, and the update strategy is overwrite, the Persistency shall replace the content of the file in the File Storage with the new content as specified in [SWS_PER_00267].
+SWS_PER_00283; When an existing file of a File Storage can be associated with a PersistencyFileProxyInterface.fileProxy or PersistencyFileArray.file in an updated manifest, and the update strategy is delete, the Persistency shall remove the file from the File Storage.
+SWS_PER_00396; When a Key-Value Storage or File Storage is opened by the application using OpenKeyValueStorage or OpenFileStorage, or when UpdatePersistency is called, the Persistency shall compare the SoftwareCluster. version in the manifest against the stored version. If the version in the manifest is lower than the stored version, the Persistency shall compare the version in the manifest against the version stored in backup data. If the versions match, the Persistency shall restore the backup. Otherwise, it shall remove all Key- Value Storages and File Storages, and re-install the lost persistent data.
+SWS_PER_00397; When ResetPersistency is called, the Persistency shall remove all Key-Value Storages and File Storages.
+SWS_PER_00302; The Persistency cluster shall be able to store all data types described in [7] in a Key-Value Storage.
+SWS_PER_00303; The Persistency cluster shall be able to store serialized binary data in a Key-Value Storage.
+SWS_PER_00304; The Persistency cluster shall be able to store all CppImplementationDataTypes referred via PersistencyKeyValueDatabaseInterface.dataTypeForSerialization or via PersistencyKeyValueDatabaseInterface.dataElement in the application design of a PersistencyKeyValueDatabase in the corresponding Key-Value Storage. See [2].
+SWS_PER_00320; The Persistency cluster shall ensure that the space configured by PersistencyDeployment.minimumSustainedSize is always available for the Key-Value Storage or File Storage.
+SWS_PER_00321; The Persistency cluster shall ensure that the space actually allocated by a Key-Value Storage or File Storage never surpasses the amount configured by PersistencyDeployment.maximumAllowedSize.
+SWS_PER_00002; All specified classes within the Persistency specification shall reside within the C++ namespace ara::per.
+;
+;
+;
+SW Constraint Number; Description
+SWS_PER_CONSTR_00001; When the Executable.version is increased, the SoftwareCluster.version needs to be increased, too.
+SWS_PER_CONSTR_00002; When the SoftwareCluster.version or Executable.version is increased, the MajorVersion, MinorVersion, or PatchVersion have to be incremented.
+SWS_PER_CONSTR_00003; A manifest is not valid if the value or data type of any PersistencyKeyValuePair or PersistencyDataElement cannot be determined, or if the determined data types are conflicting.
+SWS_PER_CONSTR_00004; A manifest is invalid if the shortNames of a PersistencyFileProxy and a PersistencyFile with the same file name differs.
+;
+;
+;
+API Req Number; Description
+SWS_PER_00052;
+SWS_PER_00333;
+SWS_PER_00334;
+SWS_PER_00331; Operations that modify a Key-Value Storage shall only be executed temporarily, such that following operations are aware of the change. The actual storage shall only be updated when SyncToStorage is called.
+SWS_PER_00339; 
+SWS_PER_00322;
+SWS_PER_00324;
+SWS_PER_00323;
+SWS_PER_00325;
+SWS_PER_00050;
+SWS_PER_00042;
+SWS_PER_00043;
+SWS_PER_00044;
+SWS_PER_00332;
+SWS_PER_00046;
+SWS_PER_00047;
+SWS_PER_00048;
+SWS_PER_00049;
+SWS_PER_00365;
+SWS_PER_00116;
+SWS_PER_00335;
+SWS_PER_00336;
+SWS_PER_00144;
+SWS_PER_00145;
+SWS_PER_00127;
+SWS_PER_00128;
+SWS_PER_00340;
+SWS_PER_00326;
+SWS_PER_00328;
+SWS_PER_00327;
+SWS_PER_00329;
+SWS_PER_00330;
+SWS_PER_00110;
+SWS_PER_00111;
+SWS_PER_00112;
+SWS_PER_00337;
+SWS_PER_00338;
+SWS_PER_00375;
+SWS_PER_00113;
+SWS_PER_00376;
+SWS_PER_00114;
+SWS_PER_00377;
+SWS_PER_00115;
+SWS_PER_00366; The types defined in this section shall be at least 16 bits wide, i.e. shall have at least the range 0...65535 for unsigned ([SWS_PER_00180], [SWS_PER_00181]) and -32768...32767 for signed ([SWS_PER_00182]) types.
+SWS_PER_00180;
+SWS_PER_00181;
+SWS_PER_00182;
+SWS_PER_00341;
+SWS_PER_00344;
+SWS_PER_00346;
+SWS_PER_00345;
+SWS_PER_00347;
+SWS_PER_00348;
+SWS_PER_00146;
+SWS_PER_00147;
+SWS_PER_00162;
+SWS_PER_00163;
+SWS_PER_00164;
+SWS_PER_00106;
+SWS_PER_00107;
+SWS_PER_00108;
+SWS_PER_00140;
+SWS_PER_00142;
+SWS_PER_00143;
+SWS_PER_00141;
+SWS_PER_00342;
+SWS_PER_00167;
+SWS_PER_00168;
+SWS_PER_00165;
+SWS_PER_00119;
+SWS_PER_00343;
+SWS_PER_00122;
+SWS_PER_00166;
+SWS_PER_00124;
+SWS_PER_00125;
+SWS_PER_00126;
+SWS_PER_00356;
+SWS_PER_00357;
+SWS_PER_00358;
+SWS_PER_00362;
+SWS_PER_00367;
+SWS_PER_00369;
+SWS_PER_00368;
+SWS_PER_00370;
+SWS_PER_00363;
+SWS_PER_00364;
+SWS_PER_00359;
+SWS_PER_00371;
+SWS_PER_00373;
+SWS_PER_00372;
+SWS_PER_00374;
+SWS_PER_00360;
+SWS_PER_00361;
+SWS_PER_00400;
+SWS_PER_00401;
+SWS_PER_00311;
+SWS_PER_00352;
+SWS_PER_00351;
+SWS_PER_00354;
+SWS_PER_00355;
+SWS_PER_00312;
+SWS_PER_00349; The numerical ID of the PerErrorDomain shall be 0x8000’0000’0000’0101.
+SWS_PER_00313;
+SWS_PER_00314;
+SWS_PER_00353; PerErrorDomain::Name shall return the NULterminated string "Per".
+SWS_PER_00315; 
+SWS_PER_00350;
+;
+;
