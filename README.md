@@ -1,6 +1,6 @@
 # autosar-adaptive
 
-Implementation of the AUTOSAR Adaptive Platform specifications
+Implementation of the AUTOSAR Adaptive Platform specifications for informational purposes only.
 
 Based on the 19-03 Standard Release.
 
